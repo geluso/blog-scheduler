@@ -64,9 +64,11 @@ def generate_schedule
 end
 
 def main
-  if STDIN.tty?
+  if ARGV.first == "fake"
     $students = generate_random_fake_students
-    puts "Using fake students: #{$students}"
+  elsif STDIN.tty?
+    puts "Paste the list of your students then CTRL+D"
+    $students = STDIN.read.split("\n")
   else
     $students = STDIN.read.split("\n")
   end
