@@ -7,11 +7,20 @@
 
 require 'pry'
 require 'date'
+require 'faker'
 
-STUDENTS = STDIN.read.split("\n")
+DEFAULT_NUM_FAKE_STUDENTS = 13
+STUDENTS_PER_DAY = 3
+COURSE_WEEK_LENGTH = 15
+
+def generate_random_fake_students
+  DEFAULT_NUM_FAKE_STUDENTS.times.map do
+    Faker::Name.name
+  end
+end
 
 def get_all_students
-  STUDENTS.dup.shuffle!
+  $students.dup.shuffle!
 end
 
 def generate_schedule
@@ -25,8 +34,8 @@ def generate_schedule
   # a row represents three students presenting per day
   row = []
 
-  # 3 students a day, 5 days a week, 15 week course (over-estimation)
-  total = 3 * 5 * 15
+  # students per day * 5 days a week * weeks in course (over-estimation)
+  total = STUDENTS_PER_DAY * 5 * COURSE_WEEK_LENGTH
 
   count = 0
   while count < total
@@ -37,7 +46,7 @@ def generate_schedule
     count += 1
 
     # print out a row once there's three students assigned
-    if row.length == 3
+    if row.length == STUDENTS_PER_DAY
       puts row.join(", ")
       row = []
       weekday = weekday.next
@@ -54,4 +63,15 @@ def generate_schedule
   end
 end
 
-generate_schedule
+def main
+  if STDIN.tty?
+    $students = generate_random_fake_students
+    puts "Using fake students: #{$students}"
+  else
+    $students = STDIN.read.split("\n")
+  end
+
+  generate_schedule
+end
+
+main
